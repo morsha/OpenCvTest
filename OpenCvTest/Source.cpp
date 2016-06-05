@@ -108,7 +108,7 @@ int main() {
 	//使用priority陣列來存取優先度 priority[scheme][hue angle center]
 	//8種template: i,V,L,I,T,Y,X,N
 
-	/*
+
 	//template i
 
 	w1 = 10;
@@ -294,7 +294,7 @@ int main() {
 	}
 	priority[4][180] = MINoneIn180(priority[4]);
 	priority[4][181] = priority[4][(int)priority[4][180]];
-	*/
+	
 	//template Y
 
 	{
@@ -383,7 +383,7 @@ int main() {
 
 	//選擇最小的template
 	int tmpt;
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 7; i++)
 	{
 		if (i == 0)
 			tmpt = priority[i][181];
@@ -393,8 +393,6 @@ int main() {
 			whichTemplate = i;
 		}
 	}
-
-	whichTemplate = 5;
 
 	//調整最小template所需的數值
 
@@ -508,11 +506,11 @@ int main() {
 					S = cvGet2D(hsv, y, x).val[1];
 					V = cvGet2D(hsv, y, x).val[2];
 
-					if (isBetween(H, centralhue1, centralhue1 - 15))
+					if (isBetween(H, centralhue1, within180(centralhue1 - 15)))
 						H = centralhue1 - (w1 / 2)*getDistance(H, centralhue1) / 15;
-					else if (isBetween(H, centralhue1 - 15, centralhue2))
+					else if (isBetween(H, within180(centralhue1 - 15), centralhue2))
 						H = centralhue2 + (w2 / 2)*getDistance(H, centralhue2) / 30;
-					else if (isBetween(H, centralhue2, centralhue2 - 75))
+					else if (isBetween(H, centralhue2, within180(centralhue2 - 75)))
 						H = centralhue2 - (w2 / 2)*getDistance(H, centralhue2) / 75;
 					else
 						H = centralhue1 + (w1 / 2)*getDistance(H, centralhue1) / 60;
@@ -546,11 +544,11 @@ int main() {
 					S = cvGet2D(hsv, y, x).val[1];
 					V = cvGet2D(hsv, y, x).val[2];
 
-					if (isBetween(H, centralhue1, centralhue1-45))
+					if (isBetween(H, centralhue1, within180(centralhue1-45)))
 						H = centralhue1 - (w1 / 2)*getDistance(H, centralhue1) / 45;
-					else if (isBetween(H, centralhue1 - 45, centralhue2))
+					else if (isBetween(H, within180(centralhue1 - 45), centralhue2))
 						H = centralhue2 + (w2 / 2)*getDistance(H, centralhue2) / 45;
-					else if (isBetween(H, centralhue2, centralhue1 + 45))
+					else if (isBetween(H, centralhue2, within180(centralhue1 + 45)))
 						H = centralhue2 - (w2 / 2)*getDistance(H, centralhue2) / 45;
 					else
 						H = centralhue1 + (w1 / 2)*getDistance(H, centralhue1) / 45;
@@ -582,11 +580,11 @@ int main() {
 					S = cvGet2D(hsv, y, x).val[1];
 					V = cvGet2D(hsv, y, x).val[2];
 
-					if (isBetween(H, centralhue1, centralhue2 + 35.5))
+					if (isBetween(H, centralhue1, within180(centralhue2 + 35.5)))
 						H = centralhue1 - (w1 / 2)*getDistance(H, centralhue1) / 54.5;
-					else if (isBetween(H, centralhue2 + 35.5, centralhue2))
+					else if (isBetween(H, within180(centralhue2 + 35.5), centralhue2))
 						H = centralhue2 + (w2 / 2)*getDistance(H, centralhue2) / 35.5;
-					else if (isBetween(H, centralhue2, centralhue2 - 35.5))
+					else if (isBetween(H, centralhue2, within180(centralhue2 - 35.5)))
 						H = centralhue2 - (w2 / 2)*getDistance(H, centralhue2) / 54.5;
 					else
 						H = centralhue1 + (w1 / 2)*getDistance(H, centralhue1) / 35.5;
