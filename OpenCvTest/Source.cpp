@@ -7,7 +7,7 @@ using namespace std;
 
 double within180(double a)
 {
-	if (a>180)
+	if (a>=180)
 		a -= 180;
 	else if (a<0)
 		a += 180;
@@ -23,7 +23,7 @@ bool isBetween(double target, double border1, double border2)
 {
 	if (border1 < border2)
 		border1 += 180;
-	if (border1 >= target && target>border2)
+	if (border1 >= target && target>=border2)
 		return true;
 	else
 		return false;
@@ -94,6 +94,13 @@ int main() {
 	//創造和src一樣的IplImage資料結構
 	IplImage* hsv = cvCreateImage(cvGetSize(src), src->depth, 3);		//hsv型態
 	IplImage* hsvv = cvCreateImage(cvGetSize(src), src->depth, 3);		//hsv型態變化
+	IplImage* hsvi = cvCreateImage(cvGetSize(src), src->depth, 3);
+	IplImage* hsvV = cvCreateImage(cvGetSize(src), src->depth, 3);
+	IplImage* hsvL = cvCreateImage(cvGetSize(src), src->depth, 3);
+	IplImage* hsvI = cvCreateImage(cvGetSize(src), src->depth, 3);
+	IplImage* hsvT = cvCreateImage(cvGetSize(src), src->depth, 3);
+	IplImage* hsvY = cvCreateImage(cvGetSize(src), src->depth, 3);
+	IplImage* hsvX = cvCreateImage(cvGetSize(src), src->depth, 3);
 	IplImage* res = cvCreateImage(cvGetSize(src), src->depth, 3);		//最後輸出圖
 
 																		//轉換成hsv
@@ -380,7 +387,7 @@ int main() {
 
 	}
 
-
+	
 	//選擇最小的template
 	int tmpt;
 	for (int i = 0; i < 7; i++)
@@ -395,59 +402,60 @@ int main() {
 	}
 
 	//調整最小template所需的數值
-
-	switch (whichTemplate)
+	for (whichTemplate = 0; whichTemplate < 7; whichTemplate++)
 	{
-	case 0:
-		w1 = 10;
-		cout << "template i " << endl;
-		break;
+		switch (whichTemplate)
+		{
+		case 0:
+			w1 = 10;
+			cout << "template i " << endl;
+			break;
 
-	case 1:
-		w1 = 48;
-		cout << "template V " << endl;
-		break;
+		case 1:
+			w1 = 48;
+			cout << "template V " << endl;
+			break;
 
-	case 2:
-		w1 = 10;
-		w2 = 40;
-		cout << "template L " << endl;
-		break;
+		case 2:
+			w1 = 10;
+			w2 = 40;
+			cout << "template L " << endl;
+			break;
 
-	case 3:
-		w1 = 10;
-		w2 = 10;
-		cout << "template I " << endl;
-		break;
+		case 3:
+			w1 = 10;
+			w2 = 10;
+			cout << "template I " << endl;
+			break;
 
-	case 4:
-		w1 = 90;
-		cout << "template T " << endl;
-		break;
+		case 4:
+			w1 = 90;
+			cout << "template T " << endl;
+			break;
 
-	case 5:
-		w1 = 48;
-		w2 = 10;
-		cout << "template Y " << endl;
-		break;
+		case 5:
+			w1 = 48;
+			w2 = 10;
+			cout << "template Y " << endl;
+			break;
 
-	case 6:
-		w1 = 48;
-		w2 = 48;
-		cout << "template X " << endl;
-		break;
+		case 6:
+			w1 = 48;
+			w2 = 48;
+			cout << "template X " << endl;
+			break;
 
-	case 7:
-		cout << "template N " << endl;
-		break;
-	}
-
-
+		case 7:
+			cout << "template N " << endl;
+			break;
+		}
 
 
-	//開始換顏色
-	switch (whichTemplate)
-	{
+
+
+		//開始換顏色
+		switch (whichTemplate)
+		{
 		case 0:
 		case 1:
 		case 4:
@@ -459,7 +467,7 @@ int main() {
 			border[1] = centralhue1 - (w1 / 2);
 			border[1] = within180(border[1]);
 
-			for (int y = 0; y < hsv->height; y++)
+			for (int y = 0; y < hsv->height; ++y)
 			{
 				for (int x = 0; x < hsv->width; x++)
 				{
@@ -479,7 +487,12 @@ int main() {
 							H = centralhue1 - (w1 / 2)*(abs(H - centralhue1)) / 90;
 						H = within180(H);
 					}
-					cvSet2D(hsvv, y, x, CV_RGB(V, S, H));
+					if (whichTemplate == 0)
+						cvSet2D(hsvi, y, x, CV_RGB(V, S, H));
+					else if (whichTemplate == 1)
+						cvSet2D(hsvV, y, x, CV_RGB(V, S, H));
+					else if (whichTemplate == 4)
+						cvSet2D(hsvT, y, x, CV_RGB(V, S, H));
 				}
 			}
 			break;
@@ -516,7 +529,7 @@ int main() {
 						H = centralhue1 + (w1 / 2)*getDistance(H, centralhue1) / 60;
 					H = within180(H);
 
-					cvSet2D(hsvv, y, x, CV_RGB(V, S, H));
+					cvSet2D(hsvL, y, x, CV_RGB(V, S, H));
 				}
 			}
 			break;
@@ -544,7 +557,7 @@ int main() {
 					S = cvGet2D(hsv, y, x).val[1];
 					V = cvGet2D(hsv, y, x).val[2];
 
-					if (isBetween(H, centralhue1, within180(centralhue1-45)))
+					if (isBetween(H, centralhue1, within180(centralhue1 - 45)))
 						H = centralhue1 - (w1 / 2)*getDistance(H, centralhue1) / 45;
 					else if (isBetween(H, within180(centralhue1 - 45), centralhue2))
 						H = centralhue2 + (w2 / 2)*getDistance(H, centralhue2) / 45;
@@ -552,8 +565,12 @@ int main() {
 						H = centralhue2 - (w2 / 2)*getDistance(H, centralhue2) / 45;
 					else
 						H = centralhue1 + (w1 / 2)*getDistance(H, centralhue1) / 45;
+
 					H = within180(H);
-					cvSet2D(hsvv, y, x, CV_RGB(V, S, H));
+					if (whichTemplate == 3)
+						cvSet2D(hsvI, y, x, CV_RGB(V, S, H));
+					else if (whichTemplate == 6)
+						cvSet2D(hsvX, y, x, CV_RGB(V, S, H));
 				}
 			}
 			break;
@@ -590,33 +607,48 @@ int main() {
 						H = centralhue1 + (w1 / 2)*getDistance(H, centralhue1) / 35.5;
 					H = within180(H);
 
-					cvSet2D(hsvv, y, x, CV_RGB(V, S, H));
+					cvSet2D(hsvY, y, x, CV_RGB(V, S, H));
 				}
 			}
 			break;
 
+		}
+
 	}
 
+		cout << centralhue1;
 
-
-	cout << centralhue1;
 
 
 		
+		
 
-	cvCvtColor(hsvv, res, CV_HSV2BGR);
+		cvCvtColor(hsvi, res, CV_HSV2BGR);
+		cvNamedWindow("image_i", 1);
+		cvShowImage("image_i", res);
+		cvCvtColor(hsvV, res, CV_HSV2BGR);
+		cvNamedWindow("image_V", 1);
+		cvShowImage("image_V", res);
+		cvCvtColor(hsvL, res, CV_HSV2BGR);
+		cvNamedWindow("image_L", 1);
+		cvShowImage("image_L", res);
+		cvCvtColor(hsvI, res, CV_HSV2BGR);
+		cvNamedWindow("image_I", 1);
+		cvShowImage("image_I", res);
+		cvCvtColor(hsvT, res, CV_HSV2BGR);
+		cvNamedWindow("image_T", 1);
+		cvShowImage("image_T", res);
+		cvCvtColor(hsvY, res, CV_HSV2BGR);
+		cvNamedWindow("image_Y", 1);
+		cvShowImage("image_Y", res);
+		cvCvtColor(hsvX, res, CV_HSV2BGR);
+		cvNamedWindow("image_X", 1);
+		cvShowImage("image_X", res);
+		
 
 
 
-
-	cvNamedWindow("Source-RGB", 1);
-	cvShowImage("Source-RGB", src);
-	cvNamedWindow("QQ", 1);
-	cvShowImage("QQ", hsv);
-	cvNamedWindow("Q8", 1);
-	cvShowImage("Q8", hsvv);
-	cvNamedWindow("result", 1);
-	cvShowImage("result", res);
+		
 
 
 
